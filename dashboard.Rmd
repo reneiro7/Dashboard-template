@@ -1,0 +1,302 @@
+---
+title: "Company Name"
+output: 
+  flexdashboard::flex_dashboard:
+  
+    orientation: rows
+    vertical_layout: fill
+
+---
+
+<style>
+
+.navbar-inverse .navbar-nav > li > a:hover,
+.navbar-inverse .navbar-nav > li > a:focus {
+    background-color: #17a589;
+    color: white;
+}
+.navbar-inverse .navbar-nav > .active > a,
+.navbar-inverse .navbar-nav > .active > a:hover,
+.navbar-inverse .navbar-nav > .active > a:focus {
+  color: white;
+  background-color:  #17a589;
+}
+.navbar-inverse .navbar-toggle:hover,
+.navbar-inverse .navbar-toggle:focus {
+  background-color:  #17a589 ;
+}
+.navbar-inverse .navbar-collapse,
+.navbar-inverse .navbar-form {
+  border-color:  #17a589 ;
+  font-size: 18px;
+  font-weight: Bold;
+}
+</style>
+
+
+Dashboard {data-icon="fa-linux"}
+===================================== 
+
+<style>    
+
+.navbar {
+  background-color:#1abc9c;
+  border-color: #a3e4d7 ;
+  
+}
+
+.navbar-brand {
+color:white!important;
+font-size: 32px;
+font-weight: Bold;
+}
+
+</style>  
+
+
+<style type="text/css">
+
+.chart-title {  /* chart_title  */
+   font-size: 25px;
+   font-weight: 1400;
+    text-align: center;
+    color:black!important;
+
+</style>
+
+
+<style>
+
+.colored {
+  background-color: #fafafa;
+}
+</style>
+
+
+<style>
+
+.bgred {
+  background-color: #F4F6F7;
+}
+</style>
+
+
+<style>
+
+.chart-wrapper .chart-title:empty {}
+
+</style>
+
+
+```{r setup, include=FALSE}
+library(flexdashboard)
+library(plotly)
+library(formattable)
+library(knitr)
+library(dplyr)
+
+```
+
+
+
+Row 
+---------------------------------
+
+
+###  Costos { .colored }
+```{r}
+
+fig <- plot_ly(y = list(1,2,3,4,5), type = "box", quartilemethod="linear", name="Costos")
+fig <- fig %>% add_trace(y = list(1,2,3,4,5), quartilemethod="inclusive", name="Costo (Inclusivo)")
+fig <- fig %>% add_trace(y = list(1,2,3,4,5), quartilemethod="exclusive", name="Costo (Exclusivo)")
+
+fig <- fig %>% layout(
+  yaxis = list(tickfont = list(size = 22)),
+  margin = list(b =0 , l =60 , r = 0, t = 0, pad = 0, autoexpand = T),
+  xaxis = list(tickfont = list(size = 22),titlefont=list(size=22)),
+  plot_bgcolor='#fafafa',
+  paper_bgcolor='#fafafa')
+
+fig <- fig %>%  config(displayModeBar = F)
+
+fig
+
+```
+
+
+### Relación Ventas-Costo-Utilidad { .colored }
+```{r}
+
+j <- abs(rnorm(400, mean = 60, sd = 20))
+k <- abs(rnorm(400, mean = 50, sd = 30))
+l <- sample(1:3, 800, replace = T, prob = NULL)
+
+x <- sample(1:200, 800, replace = T, prob = NULL)
+y<-c(j,k)
+z=factor(l, levels = c(1,2,3), labels = c("Costos","Ventas","Utilidad"))
+
+data<-data_frame(x,y,z)
+
+fig <- plot_ly(data = data, x = ~x, y = ~y, color = ~z, colors = c('#00c853','#cfd8dc','#fdb915'), type = 'scatter',
+               mode='markers', size=16)
+
+fig <- fig %>% layout(
+  yaxis = list(title = 'Importe ($)', tickfont = list(size = 22),titlefont=list(size=22)),
+  margin = list(b =20 , l = 80, r = 0, t = 0, pad = 0, autoexpand = T),
+  xaxis = list(showticklabels=F,title="Fecha",titlefont=list(size=22)),
+  plot_bgcolor='#fafafa',
+  paper_bgcolor='#fafafa')
+
+fig <- fig %>%  config(displayModeBar = F) 
+
+fig
+
+```
+
+
+### Costos I Semestre { .colored }
+```{r}
+
+product<-c("Product 1", "Product 2", "Product 3", "Product 4", "Product 4", "Product 6")
+sales<-c(75.9, 61.3, 46.3, 21.8, 16.4, 33.5)
+data<-data_frame(product,sales)
+
+fig <- plot_ly(data, labels = ~product, values = ~sales, type = 'pie',
+               insidetextfont = list(size = 22))
+
+fig <- fig %>% layout(
+         textfont_size=40,
+         margin = list(b =25 , r = 25, t = 25, pad = 0, autoexpand = T),
+         xaxis = list(showgrid = FALSE, zeroline = FALSE, showticklabels = FALSE,
+                      tickfont = list(size = 22)),
+         yaxis = list(showgrid = FALSE, zeroline = FALSE, showticklabels = FALSE,
+                      tickfont = list(size = 22)),
+         plot_bgcolor='#fafafa',
+         paper_bgcolor='#fafafa')
+
+fig <- fig %>%  config(displayModeBar = F) 
+
+fig
+
+```
+
+
+
+Row 
+------------------------------
+
+### Ventas I Semestre { .colored }
+
+```{r}
+
+mes <- c("enero", "febrero", "marzo", "abril", "mayo", "junio")
+ven_2019 <- c(2678900, 3000900, 2978700,2408900, 3010600, 2779900)
+ven_2020 <- c(2978700,2408900, 3010600, 2779900,2678900, 3000900)
+data <- data.frame(mes, ven_2019, ven_2020)
+
+fig <- plot_ly(data, x = ~mes, y = ~ven_2019, type = 'bar', name = '2019')
+fig <- fig %>% add_trace(y = ~ven_2020, name = '2020')
+
+fig <- fig %>% layout(
+  yaxis = list(title = 'Ventas ($)', tickfont = list(size = 22),titlefont=list(size=22)),
+  xaxis = list(categoryorder = "array", categoryarray = data$mes, title='Mes',tickfont = list(size = 22),
+                   titlefont=list(size=22)),
+  hoverlabel = list(font=list(size=18)),
+  plot_bgcolor='#fafafa',
+  paper_bgcolor='#fafafa',
+  barmode = 'group')
+
+fig <- fig %>%  config(displayModeBar = F) 
+
+fig
+
+```
+
+
+### Comparación Ventas-Costo-Utilidad { .colored }
+```{r}
+
+ventas <- rnorm(100, mean = 3456000, sd = 700000)
+costos <- rnorm(100, mean = 2386000, sd = 700000)
+utilidad<-rnorm(100, mean = 1766000, sd = 300000)
+x <- c(1:100)
+
+data <- data.frame(x, ventas, costos, utilidad)
+
+fig <- plot_ly(data, x = ~x, y = ~ventas, name = 'Ventas', type = 'scatter', mode = 'lines')
+fig <- fig %>% add_trace(y = ~costos, name = 'Costos', mode = 'lines+markers')
+fig <- fig %>% add_trace(y = ~utilidad, name = 'Utilidad', mode = 'markers')
+
+fig <- fig %>% layout(
+  yaxis = list(title = 'Importe ($)', tickfont = list(size = 22),titlefont=list(size=22)),
+  margin = list(b =20 , l = 80, r = 0, t = 0, pad = 0, autoexpand = T),
+  xaxis = list(showticklabels=F,title="Fecha",titlefont=list(size=22)),
+              plot_bgcolor='#fafafa',
+              paper_bgcolor='#fafafa')
+
+fig <- fig %>%  config(displayModeBar = F) 
+
+fig
+
+```
+
+### Indicadores { .colored }
+
+```{r}
+
+options(scipen=999)#Desactivar notación cientifica 
+
+customGreen = "green"
+customRed = "red"
+
+format <- formatter("span", style = x ~ style("font.size" = "23px", color = ifelse(x > 0, customGreen, ifelse(x < 0, customRed, "black"))), 
+                                   x ~ icontext(ifelse(x>0, "arrow-up", "arrow-down")), x ~ percent(x / 100) )
+
+Concepto<-c(405000000,189000000,216000000,97000000,54000000)
+Variacion<-c(38,-13,36,28,-12)
+
+dt<-data.frame(Concepto,Variacion)
+row.names(dt)<-c('Ventas Totales', 'Costo de ventas', 'Utilidad',
+                 'Inventario Inicial', 'Inventario Final')
+dt[, "Variacion"] = dt[, "Variacion"] / 100
+
+
+make_italic<- formatter("span", style = ( "font-size: 23px;") )
+names(dt) <- make_italic(names(dt))
+
+make_ita<- formatter("span", style = ( "font-size: 23px; color: black;") )
+rownames(dt)<-make_ita(rownames(dt))
+
+dt<-formattable(dt, align =c("r","r"), table.attr = "class='table table-striped'", 
+                list(
+                  "<span style=\"font-size: 23px;\">Concepto </span>" = formatter("span", style = ~ style(color = "black", "font.size" = "23px")), 
+
+                  "<span style=\"font-size: 23px;\">Variacion</span>" = format
+  
+))
+
+dt
+
+```
+
+
+
+
+Tables {data-icon="fa-table"}
+=====================================     
+
+### Table 1
+    
+```{r}
+```
+    
+### Table 2
+
+```{r}
+```
+
+
+
+
+
+
